@@ -51,7 +51,7 @@ void set_direction(Inchworm* worm_instance, int direction) {
 
 //global variables 60x60 matrix and semaphore
 char **screenMatrix;
-sem_t bin_sem;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 //update worm on the matrix given worm struct instance
 void updateScreenMatrix(Inchworm* worm_instance) {
@@ -83,8 +83,8 @@ void clearWormFromMatrix(Inchworm* worm_instance) {
 
 //Descrunch functions to handle the movement of worm as it goes 
 //from scrunched to extended, depending on the direction!
-void descrunchD0(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&sem);
+void descrunchD0(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     myWorm->set_head(myWorm, myWorm->head[0], myWorm->head[1]+2);
@@ -93,12 +93,12 @@ void descrunchD0(Inchworm* myWorm, sem_t sem) {
         myWorm->set_body(myWorm, i, myWorm->tail[0], myWorm->tail[1]+(i+1));
     }
     updateScreenMatrix(myWorm);
-    sem_post(&sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD1(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD1(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     for (int i = 0; i < 3; i++) {
@@ -106,12 +106,12 @@ void descrunchD1(Inchworm* myWorm, sem_t sem) {
     }
     myWorm->set_head(myWorm, myWorm->tail[0]-4, myWorm->tail[1]+4);
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD2(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD2(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     myWorm->set_head(myWorm, myWorm->head[0]-2, myWorm->head[1]);
@@ -119,12 +119,12 @@ void descrunchD2(Inchworm* myWorm, sem_t sem) {
         myWorm->set_body(myWorm, i, myWorm->head[0]+(1+i), myWorm->head[1]);
     }
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD3(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD3(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     myWorm->set_head(myWorm, myWorm->tail[0]-4, myWorm->tail[1]-4);
@@ -132,12 +132,12 @@ void descrunchD3(Inchworm* myWorm, sem_t sem) {
         myWorm->set_body(myWorm, i, myWorm->tail[0]-(1+i), myWorm->tail[1]-(1+i));
     }
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD4(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD4(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     myWorm->set_head(myWorm, myWorm->head[0], myWorm->head[1]-2);
@@ -145,12 +145,12 @@ void descrunchD4(Inchworm* myWorm, sem_t sem) {
         myWorm->set_body(myWorm, i, myWorm->head[0], myWorm->head[1]+(1+i));
     }
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD5(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD5(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     for (int i = 0; i < 3; i++) {
@@ -158,12 +158,12 @@ void descrunchD5(Inchworm* myWorm, sem_t sem) {
     }
     myWorm->set_head(myWorm, myWorm->tail[0]+4, myWorm->tail[1]-4);
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD6(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD6(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     for (int i = 0; i < 3; i++) {
@@ -171,12 +171,12 @@ void descrunchD6(Inchworm* myWorm, sem_t sem) {
     }
     myWorm->set_head(myWorm, myWorm->head[0]+2, myWorm->head[1]);
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
-void descrunchD7(Inchworm* myWorm, sem_t sem) {
-    sem_wait(&bin_sem);
+void descrunchD7(Inchworm* myWorm) {
+    pthread_mutex_lock(&lock);
     clearWormFromMatrix(myWorm);
     myWorm->set_scrunched(myWorm, false);
     for (int i = 0; i < 3; i++) {
@@ -184,14 +184,14 @@ void descrunchD7(Inchworm* myWorm, sem_t sem) {
     }
     myWorm->set_head(myWorm, myWorm->tail[0]+4, myWorm->tail[1]+4);
     updateScreenMatrix(myWorm);
-    sem_post(&bin_sem);
+    pthread_mutex_unlock(&lock);
     usleep(300000);
 }
 
 //displays changes to the screen
 void *thread_toScreen(void* arg) {
     while(1) {
-        sem_wait(&bin_sem);
+        pthread_mutex_lock(&lock);
         for (int i = 0; i < 60; i++) {
             for (int j = 0; j < 60; j++) {
                 move(i, j);
@@ -199,7 +199,7 @@ void *thread_toScreen(void* arg) {
             }
         }
         refresh();
-        sem_post(&bin_sem);
+        pthread_mutex_unlock(&lock);
         usleep(200000);
     }
     return NULL;
@@ -238,14 +238,106 @@ void *thread_inchwormStateManager(void* arg) {
     // time to decide where it will move
     while(true) {
 
+        pthread_mutex_lock(&lock);
+        clearWormFromMatrix(&myWorm);
+
         int randomNum = rand() % 4;
+
+        int sideCheck = 0;
 
         // if within 10 positions of a side
         if (myWorm.head[0] - 10 <= 0 || myWorm.head[0] + 10 >= 60 ||
             myWorm.head[1] - 10 <= 0 || myWorm.head[1] + 10 >= 60) {
                 randomNum = 2;
+                sideCheck = 1;
+
         }
-     
+
+        int foundWormRow = -999;
+        int foundWormCol = -999;
+        int breaker = 0;
+        if (sideCheck == 0) {
+        // detect near by worms
+            for (int r = 0; r < 5; ++r) {
+                for (int c = 0; c < 5; ++c) {
+                    // quadrant 1
+                    if (screenMatrix[myWorm.head[0] - r][myWorm.head[1] + c] != ' ') {
+                        foundWormRow = myWorm.head[0] - r;
+                        foundWormCol = myWorm.head[1] + c;
+
+                        if (myWorm.direction == 0 || myWorm.direction == 1) {
+                            randomNum = 3;
+                        }
+                        else if (myWorm.direction == 2 || myWorm.direction == 3) {
+                            randomNum = 2;
+                        }
+                        else {
+                            randomNum = 1;
+                        }
+                        breaker = 1;
+                        break;
+                    }   
+                    // quadrant 2
+                    if (screenMatrix[myWorm.head[0] - r][myWorm.head[1] - c] != ' ') {
+                        foundWormRow = myWorm.head[0] - r;
+                        foundWormCol = myWorm.head[1] - c;
+
+                        if (myWorm.direction == 2 || myWorm.direction == 3) {
+                            randomNum = 3;
+                        }
+                        else if (myWorm.direction == 4 || myWorm.direction == 5) {
+                            randomNum = 2;
+                        }
+                        else {
+                            randomNum = 1;
+                        }
+                        breaker = 1;
+                        break;
+                    }
+                    // quadrant 3
+                    if (screenMatrix[myWorm.head[0] + r][myWorm.head[1] - c] != ' ') {
+                        foundWormRow = myWorm.head[0] + r;
+                        foundWormCol = myWorm.head[1] + c;
+
+                        if (myWorm.direction == 4 || myWorm.direction == 5) {
+                            randomNum = 3;
+                        }
+                        else if (myWorm.direction == 6 || myWorm.direction == 7) {
+                            randomNum = 2;
+                        }
+                        else {
+                            randomNum = 1;
+                        }
+                        breaker = 1;
+                        break;
+                    }
+                    // quadrant 4
+                    if (screenMatrix[myWorm.head[0] + r][myWorm.head[1] + c] != ' ') {
+                        foundWormRow = myWorm.head[0] + r;
+                        foundWormCol = myWorm.head[1] - c;
+                        if (myWorm.direction == 6 || myWorm.direction == 7) {
+                            randomNum = 3;
+                        }
+                        else if (myWorm.direction == 0 || myWorm.direction == 1) {
+                            randomNum = 2;
+                        }
+                        else {
+                            randomNum = 1;
+                        }
+                        breaker = 1;
+                        break;
+                    }
+                }
+                if (breaker == 1) {
+                    break;
+                }
+            }
+
+            //decide where to move based on where the nearest worm piece is (if worm in radius)
+
+        }
+
+
         //modify direction if randomNum is 2 or 3
         if (randomNum == 2) {
             if (myWorm.direction == 7) {
@@ -263,8 +355,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.direction--;
             }
         }
-        sem_wait(&bin_sem);
-        clearWormFromMatrix(&myWorm);
+        
 
         //movement handling...
         //0 degrees
@@ -277,7 +368,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]-1, myWorm.head[1]-1);
                 myWorm.set_head(&myWorm, myWorm.head[0]-2, myWorm.head[1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -288,22 +379,22 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]+1, myWorm.head[1]-1);
                 myWorm.set_head(&myWorm, myWorm.head[0]+2, myWorm.head[1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             if (randomNum < 2) {
                 //scrunch
-                sem_wait(&bin_sem);
+                // pthread_mutex_lock(&lock);
                 clearWormFromMatrix(&myWorm);
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.body[1][0], myWorm.body[1][1]);
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]-1, myWorm.tail[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD0(&myWorm, bin_sem);
+            descrunchD0(&myWorm);
         }
 
         //45 degrees
@@ -315,7 +406,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0], myWorm.tail[1]+1);
                 myWorm.set_head(&myWorm, myWorm.tail[0]-1, myWorm.tail[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -325,7 +416,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]-1, myWorm.tail[1]);
                 myWorm.set_head(&myWorm, myWorm.body[1][0], myWorm.body[1][1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -336,10 +427,10 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_tail(&myWorm, myWorm.head[0]+2, myWorm.head[1]-2);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]+1, myWorm.head[1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-        descrunchD1(&myWorm, bin_sem);
+        descrunchD1(&myWorm);
         }
 
         //90 degrees
@@ -352,7 +443,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]+1, myWorm.head[1]+1);
                 myWorm.set_tail(&myWorm, myWorm.head[0]+2, myWorm.head[1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -363,22 +454,22 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]+1, myWorm.head[1]-1);
                 myWorm.set_tail(&myWorm, myWorm.head[0]+2, myWorm.head[1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             if (randomNum < 2) {
-                sem_wait(&bin_sem);
+                // pthread_mutex_lock(&lock);
                 clearWormFromMatrix(&myWorm);
                 //scrunch
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.body[1][0], myWorm.body[1][1]);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]+1, myWorm.head[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD2(&myWorm, bin_sem);
+            descrunchD2(&myWorm);
         }
 
         //135 degrees
@@ -390,7 +481,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]-1, myWorm.tail[1]);
                 myWorm.set_head(&myWorm, myWorm.tail[0]-1, myWorm.tail[1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -400,23 +491,22 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0], myWorm.tail[1]-1);
                 myWorm.set_head(&myWorm, myWorm.body[1][0]-1,myWorm.body[1][1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             //continuing straight
             if (randomNum < 2) {
-                sem_wait(&bin_sem);
                 clearWormFromMatrix(&myWorm);
                 //scrunch
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.head[0]+2, myWorm.head[1]+2);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]+1, myWorm.head[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD3(&myWorm, bin_sem);
+            descrunchD3(&myWorm);
         }
 
         //180 degrees
@@ -429,7 +519,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]-1, myWorm.tail[1]-1);
                 myWorm.set_head(&myWorm, myWorm.tail[0], myWorm.tail[1]-2);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -440,22 +530,22 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]+1, myWorm.tail[1]-1);
                 myWorm.set_head(&myWorm, myWorm.tail[0], myWorm.tail[1]-2);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             if (randomNum < 2) {
                 //scrunch
-                sem_wait(&bin_sem);
+                // pthread_mutex_lock(&lock);
                 clearWormFromMatrix(&myWorm);
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.body[1][0], myWorm.body[1][1]);
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]-1, myWorm.tail[1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD4(&myWorm, bin_sem);
+            descrunchD4(&myWorm);
         }
 
         //225 degrees
@@ -468,7 +558,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]-1, myWorm.head[1]);
                 myWorm.set_tail(&myWorm, myWorm.head[0]-1, myWorm.head[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -478,23 +568,23 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]+1, myWorm.tail[1]);
                 myWorm.set_head(&myWorm, myWorm.body[1][0], myWorm.body[1][1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             //continuing straight
             if (randomNum < 2) {
-                sem_wait(&bin_sem);
+                // pthread_mutex_lock(&lock);
                 clearWormFromMatrix(&myWorm);
                 //scrunch
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.head[0]-2, myWorm.head[1]+2);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]-1, myWorm.head[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD5(&myWorm, bin_sem);
+            descrunchD5(&myWorm);
         }
 
         //270 degrees
@@ -507,7 +597,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_tail(&myWorm, myWorm.head[0]-2, myWorm.head[1]);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]-1, myWorm.head[1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -518,22 +608,22 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]+1, myWorm.tail[1]+1);
                 myWorm.set_head(&myWorm, myWorm.tail[0]+2, myWorm.tail[1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             if (randomNum < 2) {
-                sem_wait(&bin_sem);
+                // pthread_mutex_lock(&lock);
                 clearWormFromMatrix(&myWorm);
                 //scrunch
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.body[1][0], myWorm.body[1][1]);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]-1, myWorm.head[1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD6(&myWorm, bin_sem);
+            descrunchD6(&myWorm);
         }
 
         //315 degrees
@@ -545,7 +635,7 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0]+1, myWorm.tail[1]);
                 myWorm.set_head(&myWorm, myWorm.tail[0]+1, myWorm.tail[1]+1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
@@ -555,24 +645,24 @@ void *thread_inchwormStateManager(void* arg) {
                 myWorm.set_body(&myWorm, 1, myWorm.tail[0], myWorm.tail[1]+1);
                 myWorm.set_head(&myWorm, myWorm.body[1][0]+1, myWorm.body[1][1]);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
 
             //continuing straight
 
             if (randomNum < 2) {
-                sem_wait(&bin_sem);
+                // pthread_mutex_lock(&lock);
                 clearWormFromMatrix(&myWorm);
                 //scrunch
                 myWorm.set_scrunched(&myWorm, true);
                 myWorm.set_tail(&myWorm, myWorm.head[0]-2, myWorm.head[1]-2);
                 myWorm.set_body(&myWorm, 1, myWorm.head[0]-1, myWorm.head[1]-1);
                 updateScreenMatrix(&myWorm);
-                sem_post(&bin_sem);
+                pthread_mutex_unlock(&lock);
                 usleep(300000);
             }
-            descrunchD7(&myWorm, bin_sem);
+            descrunchD7(&myWorm);
         }
 
         usleep(300000); // 0.2 seconds per move        
@@ -588,12 +678,8 @@ int main() {
 
     //set up semaphore
     void *thread_result;
-    sem_t *bin_sem = sem_open("/mysem", O_CREAT, 0644, 1);
-    if (bin_sem == SEM_FAILED) {
-        perror("sem_open");
-        exit(EXIT_FAILURE);
-    }
-    
+
+   
     //initalize screen and matrix
     initscr();
    
@@ -615,11 +701,10 @@ int main() {
     pthread_join(screenThread, NULL);
     pthread_join(wormThread1, NULL);
     pthread_join(wormThread2, NULL);
-    pthread_join(wormThread3, NULL);
+    pthread_join(wormThread3, NULL);  
 
     endwin();
-    sem_close(bin_sem);
-    sem_unlink("/mysem");
+    pthread_mutex_destroy(&lock);
     // free memory
      for (int i = 0; i < 60; i++) {
          free(screenMatrix[i]);
