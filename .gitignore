@@ -1,0 +1,7 @@
+# build outputs
+inchworm
+inchworm-tsan
+*.dSYM/
+
+# sanitizer logs
+tsan.log

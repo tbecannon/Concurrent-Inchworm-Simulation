@@ -190,6 +190,7 @@ void descrunchD7(Inchworm* myWorm) {
 
 //displays changes to the screen
 void *thread_toScreen(void* arg) {
+    (void)arg;      //required by pthread_create's signature. unused
     while(1) {
         pthread_mutex_lock(&lock);
         for (int i = 0; i < 60; i++) {
@@ -207,6 +208,7 @@ void *thread_toScreen(void* arg) {
 
 // manages the internal state of one inchworm
 void *thread_inchwormStateManager(void* arg) {
+    (void)arg;      //required by pthread_create's signature. unused
     
     srand((unsigned int)time(NULL) + (unsigned long)pthread_self());
     // create inchworm and set up methods
@@ -255,8 +257,6 @@ void *thread_inchwormStateManager(void* arg) {
 
         }
 
-        int foundWormRow = -999;
-        int foundWormCol = -999;
         int breaker = 0;
         if (sideCheck == 0) {
         // detect near by worms
@@ -666,10 +666,6 @@ int main() {
     //initialize the 4 threads
     pthread_t screenThread;
     pthread_t wormThread1, wormThread2, wormThread3, wormThread4, wormThread5, wormThread6;
-
-    //set up semaphore
-    void *thread_result;
-
    
     //initalize screen and matrix
     initscr();
