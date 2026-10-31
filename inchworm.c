@@ -217,20 +217,22 @@ void *thread_inchwormStateManager(void* arg) {
     myWorm.set_scrunched = set_scrunched;
     myWorm.set_direction = set_direction;
 
+    pthread_mutex_lock(&lock);
     // place inchworm on screen relative to others
-        for (int j = 10; j < 60; j=j+12) {
-            if (screenMatrix[j][20] == ' ') {
-                myWorm.set_head(&myWorm, j, 20);
-                screenMatrix[j][20] = '@';
-                for (int x = 0; x < 3; x++) {
-                    myWorm.set_body(&myWorm, x, j, 20+(x+1));
-                    screenMatrix[j][20+(x+1)] = '#';
-                }
-                myWorm.set_tail(&myWorm, j, 20+4);
-                screenMatrix[j][20+4] ='#';
-                break;
+    for (int j = 8; j < 60; j=j+8) {
+        if (screenMatrix[j][20] == ' ') {
+            myWorm.set_head(&myWorm, j, 20);
+            screenMatrix[j][20] = '@';
+            for (int x = 0; x < 3; x++) {
+                myWorm.set_body(&myWorm, x, j, 20+(x+1));
+                screenMatrix[j][20+(x+1)] = '#';
             }
+            myWorm.set_tail(&myWorm, j, 20+4);
+            screenMatrix[j][20+4] ='#';
+            break;
         }
+    }
+    pthread_mutex_unlock(&lock);
     sleep(1);
     myWorm.set_direction(&myWorm, 4);
     myWorm.set_scrunched(&myWorm, false);
@@ -262,9 +264,6 @@ void *thread_inchwormStateManager(void* arg) {
                 for (int c = 0; c < 5; ++c) {
                     // quadrant 1
                     if (screenMatrix[myWorm.head[0] - r][myWorm.head[1] + c] != ' ') {
-                        foundWormRow = myWorm.head[0] - r;
-                        foundWormCol = myWorm.head[1] + c;
-
                         if (myWorm.direction == 0 || myWorm.direction == 1) {
                             randomNum = 3;
                         }
@@ -279,9 +278,6 @@ void *thread_inchwormStateManager(void* arg) {
                     }   
                     // quadrant 2
                     if (screenMatrix[myWorm.head[0] - r][myWorm.head[1] - c] != ' ') {
-                        foundWormRow = myWorm.head[0] - r;
-                        foundWormCol = myWorm.head[1] - c;
-
                         if (myWorm.direction == 2 || myWorm.direction == 3) {
                             randomNum = 3;
                         }
@@ -296,9 +292,6 @@ void *thread_inchwormStateManager(void* arg) {
                     }
                     // quadrant 3
                     if (screenMatrix[myWorm.head[0] + r][myWorm.head[1] - c] != ' ') {
-                        foundWormRow = myWorm.head[0] + r;
-                        foundWormCol = myWorm.head[1] + c;
-
                         if (myWorm.direction == 4 || myWorm.direction == 5) {
                             randomNum = 3;
                         }
@@ -313,8 +306,6 @@ void *thread_inchwormStateManager(void* arg) {
                     }
                     // quadrant 4
                     if (screenMatrix[myWorm.head[0] + r][myWorm.head[1] + c] != ' ') {
-                        foundWormRow = myWorm.head[0] + r;
-                        foundWormCol = myWorm.head[1] - c;
                         if (myWorm.direction == 6 || myWorm.direction == 7) {
                             randomNum = 3;
                         }
@@ -674,7 +665,7 @@ int main() {
 
     //initialize the 4 threads
     pthread_t screenThread;
-    pthread_t wormThread1, wormThread2, wormThread3, wormThread4;
+    pthread_t wormThread1, wormThread2, wormThread3, wormThread4, wormThread5, wormThread6;
 
     //set up semaphore
     void *thread_result;
@@ -696,12 +687,20 @@ int main() {
     pthread_create(&wormThread1, NULL, thread_inchwormStateManager, NULL);
     pthread_create(&wormThread2, NULL, thread_inchwormStateManager, NULL);
     pthread_create(&wormThread3, NULL, thread_inchwormStateManager, NULL);
+    pthread_create(&wormThread4, NULL, thread_inchwormStateManager, NULL);
+    pthread_create(&wormThread5, NULL, thread_inchwormStateManager, NULL);
+    pthread_create(&wormThread6, NULL, thread_inchwormStateManager, NULL);
+
 
     //join them
     pthread_join(screenThread, NULL);
     pthread_join(wormThread1, NULL);
     pthread_join(wormThread2, NULL);
     pthread_join(wormThread3, NULL);  
+    pthread_join(wormThread4, NULL);  
+    pthread_join(wormThread5, NULL);  
+    pthread_join(wormThread6, NULL);  
+
 
     endwin();
     pthread_mutex_destroy(&lock);
